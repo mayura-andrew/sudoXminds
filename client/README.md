@@ -1,43 +1,48 @@
-# React + TypeScript + Vite
+# MathPrereq — Frontend (Vite + React + TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Minimal project skeleton and recommended structure for the MathPrereq research frontend.
 
-Currently, two official plugins are available:
+## Quick start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install deps: `npm install`
+2. Dev server: `npm run dev`
+3. Build: `npm run build`
 
-## Expanding the ESLint configuration
+## Key files
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `index.html` — Vite entry
+- `src/main.tsx` — React entry
+- `src/App.tsx` — Top-level app
+- `src/pages/*` — Page-level components
+- `src/components/*` — Reusable UI components
+- `src/hooks/*` — Client hooks (e.g., API calls, caching)
+- `src/api/*` — API client wrappers
+- `src/types/*` — Shared TypeScript types
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## API integration
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Uses `VITE_API_BASE_URL` environment variable (default: `http://localhost:8080/api/v1`)
+- Main backend endpoints to use:
+  - `POST /concept-query`
+  - `GET /resources/concept/{concept}`
+  - `GET /health`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+## Suggested improvements
+
+- Add React Query for caching and retries.
+- Add MUI components (already in package.json).
+- Add tests under `src/__tests__`.
+  languageOptions: {
+  parserOptions: {
+  project: ['./tsconfig.node.json', './tsconfig.app.json'],
+  tsconfigRootDir: import.meta.dirname,
   },
-])
-```
+  // other options...
+  },
+  },
+  ])
+
+````
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
@@ -66,4 +71,4 @@ export default defineConfig([
     },
   },
 ])
-```
+````
