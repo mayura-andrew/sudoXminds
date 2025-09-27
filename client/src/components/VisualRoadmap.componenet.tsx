@@ -907,7 +907,7 @@ export default function VisualRoadmap({
                           ? "contained"
                           : "outlined"
                       }
-                      startIcon={<CheckCircleIcon />}
+                      startIcon={<RiCheckboxCircleLine />}
                       onClick={() => toggleComplete(selectedConcept?.id || 0)}
                       size="small"
                     >
@@ -1035,7 +1035,7 @@ export default function VisualRoadmap({
                         ] ? (
                           <CircularProgress size={16} />
                         ) : (
-                          <SearchIcon />
+                          <RiSearchLine />
                         )
                       }
                     >
@@ -1135,7 +1135,7 @@ function ResourceCard({ resource }: { resource: APIResource }) {
               }}
               onClick={() => setShowVideo(true)}
             >
-              <PlayArrowIcon sx={{ fontSize: 32, color: "primary.main" }} />
+              <RiPlayFill size={32} color="#1976d2" />
             </Box>
           ) : videoId && showVideo ? (
             <iframe
@@ -1160,9 +1160,9 @@ function ResourceCard({ resource }: { resource: APIResource }) {
               }}
             >
               {resource.resource_type === "video" ? (
-                <PlayArrowIcon />
+                <RiPlayFill />
               ) : (
-                <SearchIcon />
+                <RiSearchLine />
               )}
             </Box>
           )}
@@ -1211,14 +1211,14 @@ function ResourceCard({ resource }: { resource: APIResource }) {
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {resource.duration && (
               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <AccessTimeIcon fontSize="small" />
+                <RiTimeLine size={16} />
                 <Typography variant="caption">{resource.duration}</Typography>
               </Box>
             )}
 
             {resource.view_count && (
               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <StarIcon fontSize="small" sx={{ color: "warning.main" }} />
+                <RiStarLine size={16} style={{ color: "#ed6c02" }} />
                 <Typography variant="caption">
                   {resource.view_count.toLocaleString()} views
                 </Typography>

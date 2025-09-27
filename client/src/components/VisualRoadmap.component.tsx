@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -20,10 +20,10 @@ import {
 } from "react-icons/ri";
 
 import ReactFlow, {
-  Node,
-  Edge,
+  type Node,
+  type Edge,
   addEdge,
-  Connection,
+  type Connection,
   useNodesState,
   useEdgesState,
   Controls,
@@ -31,10 +31,12 @@ import ReactFlow, {
   Background,
   BackgroundVariant,
   Panel,
+  Handle,
+  Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-import type { Concept, LearningPath } from "../types/api";
+import type { Concept, LearningPath, EducationalResource } from "../types/api";
 import { mathAPI } from "../services/api";
 
 const NeuralContainer = styled(Box)(({ theme }) => ({
@@ -98,9 +100,13 @@ const CustomNode = ({ data }: { data: any }) => {
           transform: "scale(1.05)",
           boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
         },
+        position: "relative",
       }}
       onClick={() => onNodeClick(node)}
     >
+      {/* React Flow handles to allow edges to connect and render */}
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
       <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
         {node.name}
       </Typography>
@@ -144,6 +150,8 @@ type NodeData = {
   pulseDelay: number;
   isCenter: boolean;
   type: "prerequisite" | "target";
+  x: number;
+  y: number;
 };
 
 export default function VisualRoadmap({
@@ -168,7 +176,60 @@ export default function VisualRoadmap({
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const processLearningPath = (data: LearningPath | undefined): Node[] => {
+  const resetEdgeStyles = useCallback(() => {
+    setEdges((eds) =>
+      eds.map((e) => {
+        const srcNode = nodes.find((n) => n.id === e.source);
+        const tgtNode = nodes.find((n) => n.id === e.target);
+        const srcCenter = (srcNode as any)?.data?.node?.isCenter;
+        const tgtCenter = (tgtNode as any)?.data?.node?.isCenter;
+
+        const animated = false;
+        const stroke = animated ? "#3b82f6" : "#cbd5e1";
+        const strokeWidth = srcCenter || tgtCenter ? 3 : 2;
+        return {
+          ...e,
+          hidden: false,
+          animated,
+          style: { ...(e.style || {}), stroke, strokeWidth },
+        };
+      })
+    );
+  }, [nodes, completedConcepts, setEdges]);
+
+  const highlightEdgesForNode = useCallback(
+    (nodeId: number) => {
+      setEdges((eds) =>
+        eds.map((e) => {
+          const isConnected =
+            e.source === String(nodeId) || e.target === String(nodeId);
+          const srcNode = nodes.find((n) => n.id === e.source);
+          const tgtNode = nodes.find((n) => n.id === e.target);
+          const srcCenter = (srcNode as any)?.data?.node?.isCenter;
+          const tgtCenter = (tgtNode as any)?.data?.node?.isCenter;
+
+          const animated = isConnected;
+          const stroke = isConnected ? "#0ea5e9" : "#e5e7eb";
+          const strokeWidth = isConnected ? 3 : 1;
+          const extraWidth = srcCenter || tgtCenter ? 1 : 0; 
+          return {
+            ...e,
+            hidden: false,
+            animated,
+            style: {
+              ...(e.style || {}),
+              stroke,
+              strokeWidth: strokeWidth + extraWidth,
+              opacity: isConnected ? 1 : 0.35,
+            },
+          };
+        })
+      );
+    },
+    [nodes, setEdges]
+  );
+
+  const processLearningPath = (data: LearningPath): NodeData[] => {
     if (!data || !data.concepts) return [];
 
     const canvasWidth = 1000;
@@ -176,7 +237,7 @@ export default function VisualRoadmap({
     const centerX = canvasWidth / 2;
     const centerY = canvasHeight / 2;
 
-    const nodes: Node[] = [];
+    const nodes: NodeData[] = [];
     const concepts = data.concepts;
 
     // Place center node (main target concept)
@@ -259,9 +320,9 @@ export default function VisualRoadmap({
   };
 
   const calculateConnections = (
-    nodeList: Node[],
+    nodeList: NodeData[],
     learningPathData?: LearningPath
-  ): Node[] => {
+  ): NodeData[] => {
     if (!learningPathData?.concepts) return nodeList;
 
     const concepts = learningPathData.concepts as Concept[];
@@ -372,6 +433,82 @@ export default function VisualRoadmap({
             strength: 0.6,
             distance: dist,
           });
+      }
+    }
+
+    // Add fallback connections if no explicit connections exist
+    let totalConnectionsAdded = 0;
+    connectionsByNode.forEach(
+      (connections) => (totalConnectionsAdded += connections.length)
+    );
+
+    // If there are very few or no connections, create a basic network structure
+    if (
+      totalConnectionsAdded === 0 ||
+      totalConnectionsAdded < nodeList.length - 1
+    ) {
+      console.log(
+        "Adding fallback connections - current total:",
+        totalConnectionsAdded
+      );
+
+      // Connect all prerequisites to the center node
+      const centerIdx = nodeList.findIndex((n) => n.isCenter);
+      if (centerIdx !== -1) {
+        nodeList.forEach((node, idx) => {
+          if (node.type === "prerequisite" && idx !== centerIdx) {
+            const exists = connectionsByNode[idx].some(
+              (c) => c.targetId === centerIdx
+            );
+            if (!exists) {
+              const dist = Math.hypot(
+                node.x - nodeList[centerIdx].x,
+                node.y - nodeList[centerIdx].y
+              );
+              connectionsByNode[idx].push({
+                targetId: centerIdx,
+                strength: 0.7,
+                distance: dist,
+              });
+            }
+          }
+        });
+
+        // Connect center node to all target nodes (except main center)
+        nodeList.forEach((node, idx) => {
+          if (node.type === "target" && idx !== centerIdx) {
+            const exists = connectionsByNode[centerIdx].some(
+              (c) => c.targetId === idx
+            );
+            if (!exists) {
+              const dist = Math.hypot(
+                nodeList[centerIdx].x - node.x,
+                nodeList[centerIdx].y - node.y
+              );
+              connectionsByNode[centerIdx].push({
+                targetId: idx,
+                strength: 0.7,
+                distance: dist,
+              });
+            }
+          }
+        });
+      } else {
+        // If no center node, create a simple chain connection
+        for (let i = 0; i < nodeList.length - 1; i++) {
+          const exists = connectionsByNode[i].some((c) => c.targetId === i + 1);
+          if (!exists) {
+            const dist = Math.hypot(
+              nodeList[i].x - nodeList[i + 1].x,
+              nodeList[i].y - nodeList[i + 1].y
+            );
+            connectionsByNode[i].push({
+              targetId: i + 1,
+              strength: 0.6,
+              distance: dist,
+            });
+          }
+        }
       }
     }
 
@@ -494,15 +631,22 @@ export default function VisualRoadmap({
         apiData = response.data;
       }
 
-      let resources: APIResource[] = [];
+      let resources: EducationalResource[] = [];
       if (Array.isArray(apiData)) {
-        resources = apiData as APIResource[];
-      } else if (
-        apiData &&
-        typeof apiData === "object" &&
-        "resources" in apiData
-      ) {
-        resources = (apiData as APIResponse).resources || [];
+        resources = apiData as EducationalResource[];
+      } else if (apiData && typeof apiData === "object") {
+        const anyObj = apiData as Record<string, unknown>;
+        // Try common shapes: { resources: [...] } or { data: { resources: [...] } }
+        const direct = anyObj["resources"];
+        const nested = (
+          anyObj["data"] as Record<string, unknown> | undefined
+        )?.["resources"];
+        const r = Array.isArray(direct)
+          ? direct
+          : Array.isArray(nested)
+          ? nested
+          : undefined;
+        resources = (r as EducationalResource[]) || [];
       }
 
       setConceptResources((prev) => ({ ...prev, [conceptId]: resources }));
@@ -517,8 +661,9 @@ export default function VisualRoadmap({
     }
   };
 
-  const handleConceptClick = async (node: Node) => {
-    if (draggedNode !== null) return;
+  const handleConceptClick = async (node: NodeData) => {
+    // Highlight only the edges connected to this node
+    highlightEdgesForNode(node.id);
 
     setSelectedConcept(node);
     setSidePanelOpen(true);
@@ -535,7 +680,7 @@ export default function VisualRoadmap({
       let prerequisites: Concept[] = [];
       if (conceptDetail.learning_path?.concepts) {
         prerequisites = conceptDetail.learning_path.concepts.filter(
-          (c) => c.name !== node.name
+          (c: Concept) => c.name !== node.name
         );
       }
 
@@ -639,6 +784,9 @@ export default function VisualRoadmap({
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
+          onPaneClick={() => {
+            resetEdgeStyles();
+          }}
           fitView
           attributionPosition="bottom-left"
         >
@@ -839,7 +987,7 @@ export default function VisualRoadmap({
                         }}
                       >
                         {conceptDetails.prerequisites.map(
-                          (prereq, prereqIndex) => (
+                          (prereq: Concept, prereqIndex: number) => (
                             <Box
                               key={prereq.id}
                               sx={{
@@ -986,7 +1134,7 @@ export default function VisualRoadmap({
 }
 
 // Resource Card Component with YouTube embedding
-function ResourceCard({ resource }: { resource: APIResource }) {
+function ResourceCard({ resource }: { resource: EducationalResource }) {
   const [showVideo, setShowVideo] = useState(false);
   const videoId = resource.url ? getYouTubeVideoId(resource.url) : null;
 
@@ -1056,10 +1204,10 @@ function ResourceCard({ resource }: { resource: APIResource }) {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
             <Chip
-              label={resource.source_domain || "youtube"}
+              label={resource.platform || "youtube"}
               size="small"
               sx={{
-                bgcolor: getPlatformColor(resource.source_domain || "youtube"),
+                bgcolor: getPlatformColor(resource.platform || "youtube"),
                 color: "white",
               }}
             />
@@ -1083,10 +1231,12 @@ function ResourceCard({ resource }: { resource: APIResource }) {
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {resource.duration && (
+            {resource.estimated_duration && (
               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <RiTimeLine size={16} />
-                <Typography variant="caption">{resource.duration}</Typography>
+                <Typography variant="caption">
+                  {resource.estimated_duration}
+                </Typography>
               </Box>
             )}
 
