@@ -1,8 +1,8 @@
-import React from 'react';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import { RiSearchLine, RiCloseLine } from 'react-icons/ri';
+import React from "react";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import { RiSearchLine, RiCloseLine } from "react-icons/ri";
 
 interface SearchInputProps {
   value: string;
@@ -17,18 +17,18 @@ export default function SearchInput({
   value,
   onChange,
   onSearch,
-  placeholder = 'Search...',
+  placeholder = "Search...",
   disabled = false,
   fullWidth = true,
 }: SearchInputProps) {
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onSearch(value);
     }
   };
 
   const handleClear = () => {
-    onChange('');
+    onChange("");
   };
 
   const handleSearch = () => {

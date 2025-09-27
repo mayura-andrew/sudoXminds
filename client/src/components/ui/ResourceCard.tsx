@@ -1,12 +1,12 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Box from '@mui/material/Box';
-import Rating from '@mui/material/Rating';
-import { RiTimeLine, RiPlayFill } from 'react-icons/ri';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import Box from "@mui/material/Box";
+import Rating from "@mui/material/Rating";
+import { RiTimeLine, RiPlayFill } from "react-icons/ri";
 
 interface APIResource {
   id: string;
@@ -40,13 +40,13 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
     if (onView) {
       onView(resource);
     } else {
-      window.open(resource.url, '_blank');
+      window.open(resource.url, "_blank");
     }
   };
 
   const formatDuration = (duration: string) => {
     // Simple duration formatting - could be enhanced
-    return duration || 'N/A';
+    return duration || "N/A";
   };
 
   const formatViewCount = (count: number) => {
@@ -59,7 +59,7 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
   };
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardContent sx={{ flex: 1 }}>
         <Typography variant="h6" component="h2" gutterBottom>
           {resource.title}
@@ -69,7 +69,7 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
           {resource.description}
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
           <Chip
             label={resource.resource_type}
             size="small"
@@ -84,7 +84,7 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
           />
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
           <Rating
             value={resource.quality_score / 20} // Assuming score is out of 100
             readOnly
@@ -96,9 +96,9 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
           {resource.duration && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
               <RiTimeLine size={16} color="action" />
               <Typography variant="body2" color="text.secondary">
                 {formatDuration(resource.duration)}
@@ -116,7 +116,7 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
         </Typography>
 
         {resource.tags && resource.tags.length > 0 && (
-          <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
             {resource.tags.slice(0, 3).map((tag, index) => (
               <Chip key={index} label={tag} size="small" variant="outlined" />
             ))}
