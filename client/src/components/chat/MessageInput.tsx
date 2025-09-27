@@ -56,13 +56,27 @@ export default function MessageInput({
         maxRows={10}
         fullWidth
         size="medium"
-        sx={{ "& .MuiOutlinedInput-root": { fontSize: "1.1rem" } }}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            fontSize: "1.1rem",
+            borderRadius: 2.5,
+            backgroundColor: "background.paper",
+            "& fieldset": { borderColor: "divider" },
+            "&:hover fieldset": { borderColor: "primary.light" },
+            "&.Mui-focused fieldset": { borderColor: "primary.main" },
+          },
+        }}
       />
       <IconButton
         color="primary"
         type="submit"
         disabled={!value.trim() || isLoading}
-        sx={{ bgcolor: "primary.main", color: "common.white", p: 2 }}
+        sx={{
+          bgcolor: "primary.main",
+          color: "common.white",
+          p: 2,
+          borderRadius: 2,
+        }}
       >
         {isLoading ? (
           <CircularProgress size={24} color="inherit" />

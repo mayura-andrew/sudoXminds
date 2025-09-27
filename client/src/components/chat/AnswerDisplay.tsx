@@ -33,7 +33,9 @@ export default function AnswerDisplay({
       }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6">Answer</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          Answer
+        </Typography>
         <Box display="flex" gap={1}>
           <Button
             variant="contained"
@@ -69,6 +71,10 @@ export default function AnswerDisplay({
           display: "flex",
           flexDirection: "column",
           wordWrap: "break-word",
+          border: 1,
+          borderColor: "divider",
+          bgcolor: "background.paper",
+          gap: 1.5,
           "&::-webkit-scrollbar": {
             width: "8px",
           },

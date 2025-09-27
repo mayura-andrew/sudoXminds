@@ -82,7 +82,13 @@ export default function LearnView({ learningPathData }: LearnViewProps) {
 
             {/* Progress indicator */}
             <Box
-              sx={{ mb: 3, p: 2, bgcolor: "background.paper", borderRadius: 1 }}
+              sx={{
+                mb: 3,
+                p: 2,
+                bgcolor: "background.paper",
+                borderRadius: 2,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
+              }}
             >
               <Typography variant="body2" sx={{ mb: 1 }}>
                 Learning Progress
@@ -91,9 +97,10 @@ export default function LearnView({ learningPathData }: LearnViewProps) {
                 <Box
                   sx={{
                     flex: 1,
-                    height: 8,
+                    height: 10,
                     bgcolor: "grey.200",
-                    borderRadius: 4,
+                    borderRadius: 999,
+                    overflow: "hidden",
                   }}
                 >
                   <Box
@@ -104,9 +111,9 @@ export default function LearnView({ learningPathData }: LearnViewProps) {
                           learningPathData.total_concepts) *
                         100
                       }%`,
-                      bgcolor: "success.main",
-                      borderRadius: 4,
-                      transition: "width 0.3s ease",
+                      background: "linear-gradient(90deg, #10b981, #22c55e)",
+                      borderRadius: 999,
+                      transition: "width 0.4s ease",
                     }}
                   />
                 </Box>

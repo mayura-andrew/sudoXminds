@@ -8,8 +8,7 @@ import {
   RiChat3Line,
   RiMapLine,
   RiSchoolLine,
-  RiArrowRightSLine,
-  RiArrowLeftSLine,
+  RiUser3Line,
 } from "react-icons/ri";
 
 export type ViewType = "chat" | "map" | "learn";
@@ -85,9 +84,15 @@ export default function NavigationBar({
         <IconButton
           aria-label="toggle profile panel"
           onClick={onProfileToggle}
-          sx={{ color: "primary.main" }}
+          sx={{
+            color: profileOpen ? "primary.contrastText" : "primary.main",
+            bgcolor: profileOpen ? "primary.main" : "transparent",
+            "&:hover": {
+              bgcolor: profileOpen ? "primary.dark" : "action.hover",
+            },
+          }}
         >
-          {profileOpen ? <RiArrowLeftSLine /> : <RiArrowRightSLine />}
+          <RiUser3Line />
         </IconButton>
       </Box>
     </Box>

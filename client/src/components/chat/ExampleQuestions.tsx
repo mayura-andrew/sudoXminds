@@ -28,7 +28,7 @@ export default function ExampleQuestions({
         gap={1}
         mb={2}
       >
-        <RiSparklingLine color="action" />
+        <RiSparklingLine />
         <Typography variant="subtitle1">Try these examples</Typography>
       </Box>
       <Box
@@ -37,6 +37,11 @@ export default function ExampleQuestions({
           gap: 1,
           flexWrap: "wrap",
           justifyContent: "center",
+          p: 2,
+          borderRadius: 2,
+          bgcolor: "background.paper",
+          border: 1,
+          borderColor: "divider",
         }}
       >
         {exampleQuestions.map((question, i) => (
@@ -45,7 +50,17 @@ export default function ExampleQuestions({
             size="medium"
             variant="outlined"
             onClick={() => onSelectQuestion(question)}
-            sx={{ borderRadius: 2 }}
+            sx={{
+              borderRadius: 999,
+              textTransform: "none",
+              px: 2,
+              color: "text.primary",
+              borderColor: "divider",
+              "&:hover": {
+                borderColor: "primary.main",
+                backgroundColor: "action.hover",
+              },
+            }}
           >
             {question}
           </Button>
