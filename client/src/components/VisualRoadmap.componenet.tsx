@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 import { styled } from "@mui/material/styles";
+import ReactMarkdown from "react-markdown";
 
 import {
   RiSparklingLine,
@@ -619,7 +620,7 @@ export default function VisualRoadmap({
           variant="h6"
           sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
-          🧠 Neural Knowledge Map
+          🧠 Knowledge Map
         </Typography>
         <Box display="flex" alignItems="center" gap={2}>
           <Typography variant="body2" color="text.secondary">
@@ -773,7 +774,7 @@ export default function VisualRoadmap({
           </NeuralNode>
         ))}
 
-        {/* Legend */}
+        {/* Legend
         <Box
           sx={{
             position: "absolute",
@@ -826,7 +827,7 @@ export default function VisualRoadmap({
               <Typography variant="caption">Advanced</Typography>
             </Box>
           </Box>
-        </Box>
+        </Box> */}
       </NeuralCanvas>
 
       {sidePanelOpen && selectedConcept && (
@@ -998,11 +999,51 @@ export default function VisualRoadmap({
                 {conceptDetails.explanation && (
                   <Box sx={{ mb: 3 }}>
                     <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                      Neural Pathway Analysis
+                      Concept Details
                     </Typography>
-                    <Typography variant="body2">
-                      {conceptDetails.explanation}
-                    </Typography>
+                    <Paper
+                      sx={{
+                        p: 2,
+                        bgcolor: "background.paper",
+                        border: 1,
+                        borderColor: "divider",
+                        "& code": {
+                          bgcolor: "rgba(148, 163, 184, 0.16)",
+                          px: 0.5,
+                          py: 0.25,
+                          borderRadius: 0.75,
+                          fontFamily:
+                            'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                          fontSize: "0.92em",
+                        },
+                        "& pre": {
+                          bgcolor: "rgba(148, 163, 184, 0.16)",
+                          p: 1,
+                          borderRadius: 1,
+                          overflow: "auto",
+                        },
+                        "& h1, & h2, & h3, & h4, & h5, & h6": {
+                          color: "primary.main",
+                          mt: 2,
+                          mb: 1,
+                        },
+                        "& ul, & ol": {
+                          pl: 2,
+                        },
+                        "& li": {
+                          mb: 0.5,
+                        },
+                        "& blockquote": {
+                          borderLeft: 4,
+                          borderColor: "primary.main",
+                          pl: 2,
+                          fontStyle: "italic",
+                          color: "text.secondary",
+                        },
+                      }}
+                    >
+                      <ReactMarkdown>{conceptDetails.explanation}</ReactMarkdown>
+                    </Paper>
                   </Box>
                 )}
 

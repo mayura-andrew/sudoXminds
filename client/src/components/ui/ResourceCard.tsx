@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
-import { RiTimeLine, RiPlayFill } from "react-icons/ri";
+import { RiTimeLine, RiPlayFill, RiVerifiedBadgeFill } from "react-icons/ri";
 
 interface APIResource {
   id: string;
@@ -33,11 +33,14 @@ interface APIResource {
 interface ResourceCardProps {
   resource: APIResource;
   onView?: (resource: APIResource) => void;
+  onSave?: (resource: APIResource) => void;
 }
 
-export default function ResourceCard({ resource, onView }: ResourceCardProps) {
-  const handleView = () => {
-    if (onView) {
+export default function ResourceCard({ resource, onView, onSave }: ResourceCardProps) {
+  const handleAction = () => {
+    if (onSave) {
+      onSave(resource);
+    } else if (onView) {
       onView(resource);
     } else {
       window.open(resource.url, "_blank");
@@ -58,45 +61,49 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
     return `${count} views`;
   };
 
-  return (
-    <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <CardContent sx={{ flex: 1 }}>
-        <Typography variant="h6" component="h2" gutterBottom>
-          {resource.title}
-        </Typography>
+  const getYouTubeVideoId = (url: string) => {
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    return match ? match[1] : null;
+  };
 
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+  const videoId = getYouTubeVideoId(resource.url);
+
+  return (
+    <Card 
+      sx={{ 
+        height: "100%", 
+        display: "flex", 
+        flexDirection: "column", 
+        transition: "box-shadow 0.3s ease", 
+        "&:hover": { boxShadow: 6 } 
+      }}
+    >
+      <CardContent sx={{ flex: 1, p: 3 }}>
+        {videoId ? (
+          <Box sx={{ mb: 3, position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 1, overflow: "hidden", boxShadow: 2 }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title={resource.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+            />
+          </Box>
+        ) : resource.thumbnail_url ? (
+          <Box sx={{ mb: 3, height: 180, backgroundImage: `url(${resource.thumbnail_url})`, backgroundSize: "cover", backgroundPosition: "center", borderRadius: 1, boxShadow: 2 }} />
+        ) : null}
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+          <Typography variant="h5" component="h2" sx={{ flex: 1 }}>
+            {resource.title}
+          </Typography>
+          {resource.is_verified && <RiVerifiedBadgeFill size={20} color="primary" />}
+        </Box>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
           {resource.description}
         </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-          <Chip
-            label={resource.resource_type}
-            size="small"
-            color="primary"
-            variant="outlined"
-          />
-          <Chip
-            label={resource.difficulty_level}
-            size="small"
-            color="secondary"
-            variant="outlined"
-          />
-        </Box>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-          <Rating
-            value={resource.quality_score / 20} // Assuming score is out of 100
-            readOnly
-            size="small"
-            precision={0.5}
-          />
-          <Typography variant="body2" color="text.secondary">
-            ({resource.quality_score}/100)
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
           {resource.duration && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
               <RiTimeLine size={16} color="action" />
@@ -110,28 +117,18 @@ export default function ResourceCard({ resource, onView }: ResourceCardProps) {
             {formatViewCount(resource.view_count)}
           </Typography>
         </Box>
-
-        <Typography variant="body2" color="text.secondary">
-          by {resource.author_channel} • {resource.source_domain}
-        </Typography>
-
-        {resource.tags && resource.tags.length > 0 && (
-          <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-            {resource.tags.slice(0, 3).map((tag, index) => (
-              <Chip key={index} label={tag} size="small" variant="outlined" />
-            ))}
-          </Box>
-        )}
       </CardContent>
 
-      <CardActions>
+      <CardActions sx={{ p: 2 }}>
         <Button
-          size="small"
+          size="large"
           startIcon={<RiPlayFill />}
-          onClick={handleView}
+          onClick={handleAction}
           fullWidth
+          variant="contained"
+          color="primary"
         >
-          View Resource
+          Save for Later
         </Button>
       </CardActions>
     </Card>

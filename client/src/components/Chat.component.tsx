@@ -93,7 +93,7 @@ export default function Chat({
         {/* App Title */}
         <Box sx={{ py: 1.5, textAlign: "center" }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            KnowliHUB - AI Math Bot
+  KnowliHub - MathPrepreq 🧮
           </Typography>
         </Box>
 

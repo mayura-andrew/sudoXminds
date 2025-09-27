@@ -38,6 +38,7 @@ import "reactflow/dist/style.css";
 
 import type { Concept, LearningPath, EducationalResource } from "../types/api";
 import { mathAPI } from "../services/api";
+import ReactMarkdown from "react-markdown";
 
 const NeuralContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -110,9 +111,9 @@ const CustomNode = ({ data }: { data: any }) => {
       <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
         {node.name}
       </Typography>
-      <Typography variant="caption" sx={{ opacity: 0.8 }}>
+      {/* <Typography variant="caption" sx={{ opacity: 0.8 }}>
         {node.difficulty}
-      </Typography>
+      </Typography> */}
       {node.isCenter && (
         <Typography
           variant="caption"
@@ -758,7 +759,7 @@ export default function VisualRoadmap({
           variant="h6"
           sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
-          🧠 Neural Knowledge Map
+          🧠 Knowledge Map
         </Typography>
         <Box display="flex" alignItems="center" gap={2}>
           <Typography variant="body2" color="text.secondary">
@@ -793,7 +794,7 @@ export default function VisualRoadmap({
           <Controls />
           <MiniMap />
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          <Panel position="top-left">
+          {/* <Panel position="top-left">
             <Box
               sx={{
                 bgcolor: "rgba(255,255,255,0.9)",
@@ -847,7 +848,7 @@ export default function VisualRoadmap({
                 </Box>
               </Box>
             </Box>
-          </Panel>
+          </Panel> */}
         </ReactFlow>
       </Box>
 
@@ -1016,66 +1017,59 @@ export default function VisualRoadmap({
                     </Box>
                   )}
 
-                {/* Neural Pathway Analysis */}
-                {conceptDetails.explanation && (
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                      Neural Pathway Analysis
-                    </Typography>
-                    <Typography variant="body2">
-                      {conceptDetails.explanation}
-                    </Typography>
-                  </Box>
-                )}
+                 {/* Neural Pathway Analysis */}
+                                {conceptDetails.explanation && (
+                                  <Box sx={{ mb: 3 }}>
+                                    <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                                      Concept Details
+                                    </Typography>
+                                    <Paper
+                                      sx={{
+                                        p: 2,
+                                        bgcolor: "background.paper",
+                                        border: 1,
+                                        borderColor: "divider",
+                                        "& code": {
+                                          bgcolor: "rgba(148, 163, 184, 0.16)",
+                                          px: 0.5,
+                                          py: 0.25,
+                                          borderRadius: 0.75,
+                                          fontFamily:
+                                            'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                                          fontSize: "0.92em",
+                                        },
+                                        "& pre": {
+                                          bgcolor: "rgba(148, 163, 184, 0.16)",
+                                          p: 1,
+                                          borderRadius: 1,
+                                          overflow: "auto",
+                                        },
+                                        "& h1, & h2, & h3, & h4, & h5, & h6": {
+                                          color: "primary.main",
+                                          mt: 2,
+                                          mb: 1,
+                                        },
+                                        "& ul, & ol": {
+                                          pl: 2,
+                                        },
+                                        "& li": {
+                                          mb: 0.5,
+                                        },
+                                        "& blockquote": {
+                                          borderLeft: 4,
+                                          borderColor: "primary.main",
+                                          pl: 2,
+                                          fontStyle: "italic",
+                                          color: "text.secondary",
+                                        },
+                                      }}
+                                    >
+                                      <ReactMarkdown>{conceptDetails.explanation}</ReactMarkdown>
+                                    </Paper>
+                                  </Box>
+                                )}
 
-                {/* Fetch Resources Button */}
-                <Box sx={{ mb: 3 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      onClick={() =>
-                        fetchConceptResources(
-                          selectedConcept?.id.toString() || "",
-                          selectedConcept?.name || ""
-                        )
-                      }
-                      disabled={
-                        loadingResources[selectedConcept?.id.toString() || ""]
-                      }
-                      startIcon={
-                        loadingResources[
-                          selectedConcept?.id.toString() || ""
-                        ] ? (
-                          <CircularProgress size={16} />
-                        ) : (
-                          <RiSearchLine />
-                        )
-                      }
-                    >
-                      {loadingResources[selectedConcept?.id.toString() || ""]
-                        ? "Fetching Resources..."
-                        : "Fetch Learning Resources"}
-                    </Button>
-                    {conceptResources[selectedConcept?.id.toString() || ""] && (
-                      <Typography variant="caption" color="text.secondary">
-                        {
-                          conceptResources[selectedConcept?.id.toString() || ""]
-                            .length
-                        }{" "}
-                        resources found
-                      </Typography>
-                    )}
-                  </Box>
-                </Box>
+                
 
                 {/* Concept-specific resources */}
                 {conceptResources[selectedConcept?.id.toString() || ""] &&

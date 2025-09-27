@@ -48,7 +48,7 @@ export default function ProfilePanel() {
               Student Profile
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              KnowliHUB - AI Math Bot
+              KnowliHub - MathPrepreq
             </Typography>
           </Box>
         </Box>
