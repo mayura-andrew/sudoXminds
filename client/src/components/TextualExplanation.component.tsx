@@ -169,11 +169,21 @@ export default function TextualExplanation({
 }: {
   response: QueryResponse | SmartConceptQueryResponse | undefined;
 }) {
-  if (!response || !response.success) {
+  if (!response) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="body1" color="error.main">
-          {response?.error || "No response available"}
+          No response available
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!response.success) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Typography variant="body1" color="error.main">
+          {response.error || "Request failed"}
         </Typography>
       </Box>
     );
@@ -195,7 +205,7 @@ export default function TextualExplanation({
       </Box>
 
       {/* Main Explanation */}
-      {response.explanation && (
+      {response.explanation ? (
         <Box sx={{ mb: 3 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Explanation
@@ -236,6 +246,12 @@ export default function TextualExplanation({
           >
             {processMathText(response.explanation).map(renderProcessedLine)}
           </Paper>
+        </Box>
+      ) : (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            No explanation was provided.
+          </Typography>
         </Box>
       )}
 
